@@ -1,4 +1,4 @@
-MEDEA Take Home Backend
+# Video Library Backend
 
 ## Description
 
