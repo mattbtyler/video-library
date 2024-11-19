@@ -1,0 +1,60 @@
+@import 'antd/dist/reset.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: 'SFProDisplay';
+    src: url('./fonts/sf-pro-display-bold.woff2') format('woff2');
+    font-weight: 700; 
+    font-style: normal;
+  }
+  html {
+    font-family: "SFProDisplay", system-ui, sans-serif;
+  }
+}
+
+:root {
+  line-height: 1.5;
+  font-weight: 400;
+
+  color: #FAFAFA;
+  background-color: #1F1F1F;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #000;
+}
+
+table {
+  thead th {
+    background-color: #000 !important;
+    border: none !important;
+  }
+
+  tbody {
+    tr {
+      background-color: #000 !important;
+      td {
+        background-color: inherit !important;
+        border: none !important;
+      }
+    }
+  }
+}
+
+.ant-menu-item-selected {
+  color: #B4FE17 !important;
+}
+
+.ant-modal-content {
+  background-color: #000;
+  border: solid #B4FE17 1px !important;
+}
