@@ -73,6 +73,7 @@ const App = () => {
   };
 
   const handleBackToTable = () => {
+    setSelectedKey('1');
     setSelectedVideo(null);
   };
 
