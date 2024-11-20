@@ -38,8 +38,15 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: (_result, _error, { id }) => [{ type: 'Video', id }]
     }),
+    deleteVideo: builder.mutation<Video, Partial<Video>>({
+      query: ({ id }) => ({
+        url: `/videos/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'Video', id }]
+    }),
   }),
 });
 
-export const { useGetVideosQuery, useCreateVideoMutation, useUpdateVideoMutation } = apiSlice;
+export const { useGetVideosQuery, useCreateVideoMutation, useUpdateVideoMutation, useDeleteVideoMutation } = apiSlice;
 

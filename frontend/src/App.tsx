@@ -15,7 +15,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { YouTubePlayer } from 'react-youtube';
 import VideoControls from './components/VideoControls';
 import VideoPlayer from './components/VideoPlayer';
-import { VideoFormData, VideoSchema } from './types';
+import { Video, VideoFormData, VideoSchema } from './types';
 import { extractYoutubeVideoId } from './app/utils';
 
 const { Header, Sider, Content, Footer } = Layout;
@@ -67,7 +67,7 @@ const App = () => {
     }
   };
 
-  const handleRowClick = (record: VideoFormData) => {
+  const handleRowClick = (record: Video) => {
     setSelectedKey('0');
     setSelectedVideo(record);
   };

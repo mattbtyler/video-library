@@ -1,5 +1,23 @@
-import { Card, Table } from 'antd';
+import {
+  Button,
+  Card,
+  Modal,
+  Popconfirm,
+  Space,
+  Table,
+  Form,
+  Input
+} from 'antd';
 import { extractYoutubeVideoId } from '../app/utils';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useState } from 'react';
+import { Video, VideoFormData, VideoSchema } from '../types';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  useDeleteVideoMutation,
+  useUpdateVideoMutation
+} from '../features/videos/videosApiSlice';
 
 interface VideoTableProps {
   data: {
@@ -11,9 +29,49 @@ interface VideoTableProps {
 }
 
 const VideoTable: React.FC<VideoTableProps> = ({ data, onRowClick }) => {
+  const [editRecordId, setEditRecordId] = useState<number | null>(null);
+  const [updateVideo] = useUpdateVideoMutation();
+  const [deleteVideo] = useDeleteVideoMutation();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm<VideoFormData>({
+    resolver: zodResolver(VideoSchema)
+  });
+
+  const onEditSubmit = async (formData: VideoFormData) => {
+    try {
+      const updatedVideo: Video = {
+        id: editRecordId!,
+        ...formData
+      };
+      handleEdit(updatedVideo);
+      setEditRecordId(null);
+    } catch (error) {
+      console.error('Failed to update video:', error);
+    }
+  };
+
+  const handleEdit = async (record: Video) => {
+    try {
+      await updateVideo(record);
+    } catch (error) {
+      console.error('Failed to update video:', error);
+    }
+  };
+
+  const handleDelete = async (record: Video) => {
+    try {
+      await deleteVideo({ id: record.id });
+    } catch (error) {
+      console.error('Failed to delete video:', error);
+    }
+  };
+
   const columns = [
     {
-      // title: 'Name',
       dataIndex: 'name',
       key: 'name',
       render: (_: any, record: { id: number; name: string; url: string }) => {
@@ -27,10 +85,73 @@ const VideoTable: React.FC<VideoTableProps> = ({ data, onRowClick }) => {
               width={250}
               alt={record.name}
             />
-            <Card.Meta
-              title={record.name}
-              // description={record.url}
-            />
+            <Card.Meta className="pb-6" title={record.name} />
+            <Space>
+              <Button
+                icon={<EditOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditRecordId(record.id);
+                  reset(record);
+                }}
+              />
+              <div onClick={(e) => e.stopPropagation()}>
+                <Modal
+                  title="Edit Video"
+                  open={editRecordId === record.id}
+                  onCancel={() => setEditRecordId(null)}
+                  footer={null}
+                >
+                  <Form onFinish={handleSubmit(onEditSubmit)}>
+                    <Form.Item
+                      label="Name"
+                      validateStatus={errors.name ? 'error' : ''}
+                      help={errors.name?.message}
+                    >
+                      <Controller
+                        name="name"
+                        control={control}
+                        render={({ field }) => <Input {...field} />}
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      label="YouTube url"
+                      validateStatus={errors.url ? 'error' : ''}
+                      help={errors.url?.message}
+                    >
+                      <Controller
+                        name="url"
+                        control={control}
+                        render={({ field }) => <Input {...field} />}
+                      />
+                    </Form.Item>
+                    <Form.Item>
+                      <Button type="primary" htmlType="submit">
+                        Save
+                      </Button>
+                    </Form.Item>
+                  </Form>
+                </Modal>
+              </div>
+              <div onClick={(e) => e.stopPropagation()}>
+                <Popconfirm
+                  title="Are you sure you want to delete this video?"
+                  onConfirm={async () => {
+                    await handleDelete(record);
+                  }}
+                  onCancel={() => {}}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button
+                    icon={<DeleteOutlined />}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  />
+                </Popconfirm>
+              </div>
+            </Space>
           </Card>
         );
       }
@@ -54,7 +175,6 @@ const VideoTable: React.FC<VideoTableProps> = ({ data, onRowClick }) => {
         onRow={(record) => ({
           onClick: () => onRowClick(record)
         })}
-        className="bg-black border-s-orange-600"
       />
     </div>
   );
